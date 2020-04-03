@@ -3,19 +3,20 @@ import { JSDOM } from 'jsdom';
 import { TOPPAGE_URL } from './settings';
 import cachedFetchContent from './cachedFetch';
 
-export const fetchMember = async (
-  member_url: string
-): Promise<Member | null> => {
+export type NameAndChannelId = Pick<Member, 'name' | 'channel_id'>;
+export const fetchNameAndChannelId = async (
+  memberpage_url: string
+): Promise<NameAndChannelId | null> => {
   const toppage_dom = new JSDOM(await cachedFetchContent(TOPPAGE_URL));
   const toppage_document = toppage_dom.window.document;
 
   const name_img = toppage_document.querySelector(
-    `a[href='${member_url}'] img`
+    `a[href='${memberpage_url}'] img`
   );
   if (name_img === null) return null;
   const name = (name_img as HTMLImageElement).alt;
 
-  const memberpage_dom = new JSDOM(await cachedFetchContent(member_url));
+  const memberpage_dom = new JSDOM(await cachedFetchContent(memberpage_url));
   const memberpage_document = memberpage_dom.window.document;
 
   const channel_link = memberpage_document.querySelector(
@@ -31,25 +32,26 @@ export const fetchMember = async (
   return { name, channel_id };
 };
 
-export const fetchMembers = async (): Promise<Member[]> => {
+export const fetchNameAndChannelIds = async (): Promise<NameAndChannelId[]> => {
   const dom = new JSDOM(await cachedFetchContent(TOPPAGE_URL));
   const document = dom.window.document;
 
-  const member_anchers: NodeListOf<Element> = document.querySelectorAll(
+  const memberpage_anchers: NodeListOf<Element> = document.querySelectorAll(
     '#elementor-tab-content-7551 a'
   );
 
-  const member_urls: string[] = Array.from(member_anchers).map(
+  const memberpage_urls: string[] = Array.from(memberpage_anchers).map(
     x => (x as HTMLAnchorElement).href
   );
 
-  let members: Member[] = [];
-  for (const member_url of member_urls) {
-    const member = await fetchMember(member_url);
-    if (null !== member) members.push(member);
+  let name_and_channel_ids: NameAndChannelId[] = [];
+  for (const url of memberpage_urls) {
+    const name_and_channel_id = await fetchNameAndChannelId(url);
+    if (null !== name_and_channel_id)
+      name_and_channel_ids.push(name_and_channel_id);
   }
 
-  return members;
+  return name_and_channel_ids;
 };
 
-export default fetchMembers;
+export default fetchNameAndChannelIds;
