@@ -1,12 +1,25 @@
+import path from 'path';
+import fs from 'fs';
+import sanitize from 'sanitize-filename';
 import { Member } from '../types';
 import { JSDOM } from 'jsdom';
-import { TOPPAGE_URL } from './settings';
+import { TOPPAGE_URL, FUNC_CACHE_DIR } from './settings';
 import cachedFetchContent from './cachedFetch';
 
 export type NameAndChannelId = Pick<Member, 'name' | 'channel_id'>;
 export const fetchNameAndChannelId = async (
   memberpage_url: string
 ): Promise<NameAndChannelId | null> => {
+  const fullpath = path.join(
+    __dirname,
+    FUNC_CACHE_DIR,
+    sanitize(memberpage_url)
+  );
+  try {
+    return JSON.parse(fs.readFileSync(fullpath).toString()) as NameAndChannelId;
+  } catch (e) {}
+
+  //no cache
   const toppage_dom = new JSDOM(await cachedFetchContent(TOPPAGE_URL));
   const toppage_document = toppage_dom.window.document;
 
@@ -29,6 +42,7 @@ export const fetchNameAndChannelId = async (
   if (matched === null) return null;
   const channel_id = matched[1].replace('?sub_confirmation=1', '');
 
+  fs.writeFileSync(fullpath, JSON.stringify({ name, channel_id }));
   return { name, channel_id };
 };
 
@@ -41,7 +55,7 @@ export const fetchNameAndChannelIds = async (): Promise<NameAndChannelId[]> => {
   );
 
   const memberpage_urls: string[] = Array.from(memberpage_anchers).map(
-    x => (x as HTMLAnchorElement).href
+    (x) => (x as HTMLAnchorElement).href
   );
 
   let name_and_channel_ids: NameAndChannelId[] = [];

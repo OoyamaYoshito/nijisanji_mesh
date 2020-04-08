@@ -1,14 +1,16 @@
+import path from 'path';
+import fs from 'fs';
 import { Member } from '../types';
 import { JSDOM } from 'jsdom';
 import cachedFetchContent from './cachedFetch';
 import { parse } from 'querystring';
-import { NICKNAME_WIKI_URL } from './settings';
+import { NICKNAME_WIKI_URL, FUNC_CACHE_DIR } from './settings';
 
 export type NameAndNicknames = Pick<Member, 'name' | 'nicknames'>;
 const getNicknamesFromTD = (
   td: HTMLTableDataCellElement
 ): Member['nicknames'] => {
-  td.querySelectorAll('a').forEach(a => a.remove());
+  td.querySelectorAll('a').forEach((a) => a.remove());
   const text = td.textContent;
   if (text === null) return [];
   const spliter = /[、→\/]/;
@@ -17,7 +19,7 @@ const getNicknamesFromTD = (
     .replace(/\(.*\)/, '')
     .replace(/（.*）/, '')
     .split(spliter)
-    .filter(x => x !== '');
+    .filter((x) => x !== '');
 };
 
 const parseRow = (row: HTMLTableRowElement): NameAndNicknames | null => {
@@ -41,29 +43,42 @@ const parseTable = (table: HTMLTableElement): NameAndNicknames[] => {
 };
 
 export const fetchNameAndNicknames = async (): Promise<NameAndNicknames[]> => {
+  const fullpath = path.join(__dirname, FUNC_CACHE_DIR, 'NameAndNicknames');
+  try {
+    return JSON.parse(
+      fs.readFileSync(fullpath).toString()
+    ) as NameAndNicknames[];
+  } catch (e) {}
+
+  //no cache
   const dom = new JSDOM(await cachedFetchContent(NICKNAME_WIKI_URL));
   const document = dom.window.document;
 
   const tables = document.querySelectorAll('div.h-scrollable');
   const name_and_nicknames_array = Array.from(tables)
-    .map(x => parseTable(x as HTMLTableElement))
+    .map((x) => parseTable(x as HTMLTableElement))
     .reduce((s, x) => [...s, ...x]);
 
   let nicknames_map: { [key: string]: Set<string> } = {};
-  name_and_nicknames_array.forEach(x => {
+  name_and_nicknames_array.forEach((x) => {
     nicknames_map[x.name] = new Set([]);
   });
-  name_and_nicknames_array.forEach(x => {
+  name_and_nicknames_array.forEach((x) => {
     const target_map = nicknames_map[x.name];
-    x.nicknames.forEach(x => {
+    x.nicknames.forEach((x) => {
       target_map.add(x);
     });
   });
 
-  return Object.keys(nicknames_map).map(x => ({
-    name: x,
-    nicknames: Array.from(nicknames_map[x]),
-  }));
+  const name_and_nicknames: NameAndNicknames[] = Object.keys(nicknames_map).map(
+    (x) => ({
+      name: x,
+      nicknames: Array.from(nicknames_map[x]),
+    })
+  );
+
+  fs.writeFileSync(fullpath, JSON.stringify(name_and_nicknames));
+  return name_and_nicknames;
 };
 
 export default fetchNameAndNicknames;
