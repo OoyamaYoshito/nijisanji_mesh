@@ -10,6 +10,7 @@
     "@types/node": "^13.9.8",
     "@types/node-fetch": "^2.5.5",
     "@types/sanitize-filename": "^1.6.3",
+    "@types/urlencode": "^1.1.1",
     "jsdom": "^16.2.2",
     "node-fetch": "^2.6.0",
     "react": "^16.13.1",
@@ -17,7 +18,8 @@
     "react-scripts": "3.4.1",
     "sanitize-filename": "^1.6.3",
     "ts-node": "^8.8.1",
-    "typescript": "^3.8.3"
+    "typescript": "^3.8.3",
+    "urlencode": "^1.1.0"
   },
   "scripts": {
     "scraping": "cd src/scraping && ts-node index.ts",

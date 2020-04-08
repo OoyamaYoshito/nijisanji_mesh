@@ -2,6 +2,7 @@ import path from 'path';
 import fs from 'fs';
 import sanitize from 'sanitize-filename';
 import fetch from 'node-fetch';
+import urlencode from 'urlencode';
 import { CACHE_DIR, FETCH_INTERVAL } from './settings';
 
 //scraping utils
@@ -16,6 +17,8 @@ export const cachedFetchContent = async (url: string): Promise<string> => {
   } catch (e) {}
 
   //no cache
+  console.log('fetching:', urlencode.decode(url));
+
   await sleep(FETCH_INTERVAL);
   const res = await fetch(url);
   const content = await res.text();
