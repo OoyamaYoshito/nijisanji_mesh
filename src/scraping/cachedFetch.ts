@@ -3,15 +3,15 @@ import fs from 'fs';
 import sanitize from 'sanitize-filename';
 import fetch from 'node-fetch';
 import urlencode from 'urlencode';
-import { CACHE_DIR, FETCH_INTERVAL } from './settings';
+import { FETCH_CACHE_DIR, FETCH_INTERVAL } from './settings';
 
 //scraping utils
 const sleep = async (ms: number): Promise<void> =>
-  new Promise(resolve => setTimeout(() => resolve(), ms));
+  new Promise((resolve) => setTimeout(() => resolve(), ms));
 
-export const cachedFetchContent = async (url: string): Promise<string> => {
+const cachedFetchContent = async (url: string): Promise<string> => {
   const filename = sanitize(url);
-  const fullpath = path.join(__dirname, CACHE_DIR, filename);
+  const fullpath = path.join(__dirname, FETCH_CACHE_DIR, filename);
   try {
     return fs.readFileSync(fullpath).toString();
   } catch (e) {}

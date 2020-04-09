@@ -1,8 +1,10 @@
+import path from 'path';
+import fs from 'fs';
 import { Member } from '../types';
 import { JSDOM } from 'jsdom';
 import cachedFetchContent from './cachedFetch';
 import { parse } from 'querystring';
-import { NICKNAME_WIKI_URL } from './settings';
+import { NICKNAME_WIKI_URL, FUNC_CACHE_DIR } from './settings';
 
 export type NameAndNicknames = Pick<Member, 'name' | 'nicknames'>;
 const getNicknamesFromTD = (
@@ -43,6 +45,14 @@ const parseTable = (table: HTMLTableElement): NameAndNicknames[] => {
 };
 
 export const fetchNameAndNicknames = async (): Promise<NameAndNicknames[]> => {
+  const fullpath = path.join(__dirname, FUNC_CACHE_DIR, 'NameAndNicknames');
+  try {
+    return JSON.parse(
+      fs.readFileSync(fullpath).toString()
+    ) as NameAndNicknames[];
+  } catch (e) {}
+
+  //no cache
   const dom = new JSDOM(await cachedFetchContent(NICKNAME_WIKI_URL));
   const document = dom.window.document;
 
@@ -62,10 +72,15 @@ export const fetchNameAndNicknames = async (): Promise<NameAndNicknames[]> => {
     });
   });
 
-  return Object.keys(nicknames_map).map((x) => ({
-    name: x,
-    nicknames: Array.from(nicknames_map[x]).filter((y) => y !== x),
-  }));
+  const name_and_nicknames: NameAndNicknames[] = Object.keys(nicknames_map).map(
+    (x) => ({
+      name: x,
+      nicknames: Array.from(nicknames_map[x]),
+    })
+  );
+
+  fs.writeFileSync(fullpath, JSON.stringify(name_and_nicknames));
+  return name_and_nicknames;
 };
 
 export default fetchNameAndNicknames;
