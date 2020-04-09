@@ -1,7 +1,7 @@
 import fs from 'fs';
-import { Member } from '../types';
+import { Member, Mention, ResultJSON } from '../types';
 import path from 'path';
-import { FETCH_CACHE_DIR, FUNC_CACHE_DIR } from './settings';
+import { FETCH_CACHE_DIR, FUNC_CACHE_DIR, RESURT_FILE } from './settings';
 import fetchNameAndChannelIds from './fetchNameAndChannelIds';
 import fetchNameAndNicknames from './fetchNameAndNicknames';
 import fetchMembersMentions from './fetchMentions';
@@ -21,11 +21,16 @@ const main = async () => {
   );
 
   const name_and_nicknames = await fetchNameAndNicknames();
-  const members: Member[] = name_and_nicknames.map((x) => ({
-    ...x,
-    channel_id: name_2_channel_id[x.name],
-  }));
+  const members: Member[] = name_and_nicknames
+    .map((x) => ({
+      ...x,
+      channel_id: name_2_channel_id[x.name],
+    }))
+    .filter((x) => x.channel_id !== undefined);
 
-  await fetchMembersMentions(members);
+  const mentions: Mention[] = await fetchMembersMentions(members);
+  const result: ResultJSON = { members, mentions };
+  const fullpath: string = path.join(__dirname, RESURT_FILE);
+  fs.writeFileSync(fullpath, JSON.stringify(result));
 };
 main();

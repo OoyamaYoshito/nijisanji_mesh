@@ -3,7 +3,6 @@ import fs from 'fs';
 import { Member } from '../types';
 import { JSDOM } from 'jsdom';
 import cachedFetchContent from './cachedFetch';
-import { parse } from 'querystring';
 import { NICKNAME_WIKI_URL, FUNC_CACHE_DIR } from './settings';
 
 export type NameAndNicknames = Pick<Member, 'name' | 'nicknames'>;

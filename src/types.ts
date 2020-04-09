@@ -5,3 +5,7 @@ export type Mention = {
   target_channel: string;
   comment_num: number;
 };
+export type ResultJSON = {
+  members: Member[];
+  mentions: Mention[];
+};

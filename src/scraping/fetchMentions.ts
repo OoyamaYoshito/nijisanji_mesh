@@ -21,11 +21,11 @@ const fetchNicknamesMentions = async (
 
   const result: CountHitsResult = JSON.parse(content);
   const filterd_result = result.results.filter(
-    x => x.video.channelId != target_channel
+    (x) => x.video.channelId != target_channel
   );
 
   const grouped_mentions: { [key: string]: number } = {};
-  filterd_result.forEach(x => {
+  filterd_result.forEach((x) => {
     const channelId = x.video.channelId;
     if (grouped_mentions[channelId] === undefined)
       grouped_mentions[channelId] = x.hitCount;
@@ -39,8 +39,29 @@ const fetchNicknamesMentions = async (
   }));
 };
 
+const removeNicknamesDuplicates = (nicknames: string[]): string[] => {
+  let duplicted_nicknames: string[] = nicknames
+    .concat()
+    .sort((x, y) => x.length - y.length);
+
+  let result: string[] = [];
+  while (duplicted_nicknames.length !== 0) {
+    const ser = duplicted_nicknames.shift() as string;
+
+    result.push(ser);
+    duplicted_nicknames = duplicted_nicknames.filter(
+      (x) => x.indexOf(ser) === -1
+    );
+  }
+
+  return result;
+};
+
 const fetchMemberMentions = async (member: Member): Promise<Mention[]> => {
-  const nicknames_and_fullname: string[] = [...member.nicknames, member.name];
+  const nicknames_and_fullname: string[] = removeNicknamesDuplicates([
+    ...member.nicknames,
+    member.name,
+  ]);
   let result_mentions: Mention[] = [];
   for (const x of nicknames_and_fullname) {
     const nicknames_mentions = await fetchNicknamesMentions(
@@ -51,7 +72,7 @@ const fetchMemberMentions = async (member: Member): Promise<Mention[]> => {
   }
 
   const member_mentions: { [key: string]: number } = {};
-  result_mentions.forEach(x => {
+  result_mentions.forEach((x) => {
     const channelId = x.origin_channel;
     if (member_mentions[channelId] === undefined)
       member_mentions[channelId] = x.comment_num;
