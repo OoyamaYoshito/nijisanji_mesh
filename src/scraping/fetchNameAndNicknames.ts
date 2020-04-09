@@ -8,16 +8,18 @@ export type NameAndNicknames = Pick<Member, 'name' | 'nicknames'>;
 const getNicknamesFromTD = (
   td: HTMLTableDataCellElement
 ): Member['nicknames'] => {
-  td.querySelectorAll('a').forEach(a => a.remove());
+  td.querySelectorAll('a').forEach((a) => a.remove());
   const text = td.textContent;
   if (text === null) return [];
-  const spliter = /[、→\/]/;
+  const spliter = /[、→\/,]/;
 
   return text
     .replace(/\(.*\)/, '')
     .replace(/（.*）/, '')
+    .replace(/[ 　]/g, '')
     .split(spliter)
-    .filter(x => x !== '');
+    .filter((x) => x !== '')
+    .filter((x) => x.length < 15);
 };
 
 const parseRow = (row: HTMLTableRowElement): NameAndNicknames | null => {
@@ -46,23 +48,23 @@ export const fetchNameAndNicknames = async (): Promise<NameAndNicknames[]> => {
 
   const tables = document.querySelectorAll('div.h-scrollable');
   const name_and_nicknames_array = Array.from(tables)
-    .map(x => parseTable(x as HTMLTableElement))
+    .map((x) => parseTable(x as HTMLTableElement))
     .reduce((s, x) => [...s, ...x]);
 
   let nicknames_map: { [key: string]: Set<string> } = {};
-  name_and_nicknames_array.forEach(x => {
+  name_and_nicknames_array.forEach((x) => {
     nicknames_map[x.name] = new Set([]);
   });
-  name_and_nicknames_array.forEach(x => {
+  name_and_nicknames_array.forEach((x) => {
     const target_map = nicknames_map[x.name];
-    x.nicknames.forEach(x => {
+    x.nicknames.forEach((x) => {
       target_map.add(x);
     });
   });
 
-  return Object.keys(nicknames_map).map(x => ({
+  return Object.keys(nicknames_map).map((x) => ({
     name: x,
-    nicknames: Array.from(nicknames_map[x]),
+    nicknames: Array.from(nicknames_map[x]).filter((y) => y !== x),
   }));
 };
 
