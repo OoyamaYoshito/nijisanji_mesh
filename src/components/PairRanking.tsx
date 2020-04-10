@@ -74,8 +74,6 @@ const StyledPair = styled.tr`
   }
 `;
 
-const StyledTableDataAmout = styled.td``;
-
 const isNijisanjiChannelId = (id: string): boolean => id2member.has(id);
 
 const PairRanking: FC<{}> = () => {
