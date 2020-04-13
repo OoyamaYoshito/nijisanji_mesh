@@ -3,15 +3,7 @@ import { Member, Mention, ResultJSON } from '../types';
 import result_json from '../scraping/TEMP_result.json';
 import styled from '@emotion/styled';
 import theme from '../style/theme';
-
-const result: ResultJSON = result_json;
-const id2member: Map<string, Member> = new Map();
-result.members.forEach((x) => id2member.set(x.channel_id, x));
-const getNameFromId = (id: string): string | undefined => {
-  const member = id2member.get(id);
-  if (member === undefined) return undefined;
-  return member.name;
-};
+import { getNameFromId, pairs } from './DataProcessingUtill';
 
 const YoutubeChannelLink: FC<{ id: string; text?: string }> = ({
   id,
@@ -74,33 +66,8 @@ const StyledPair = styled.tr`
   }
 `;
 
-const isNijisanjiChannelId = (id: string): boolean => id2member.has(id);
-
 const PairRanking: FC<{}> = () => {
-  const nijisanji_mentions = result.mentions.filter((x) =>
-    isNijisanjiChannelId(x.origin_channel)
-  );
-  const mentions_group_map: Map<string, Mention[]> = new Map();
-  nijisanji_mentions.forEach((x) => {
-    const key =
-      x.origin_channel.localeCompare(x.target_channel) > 0
-        ? `${x.origin_channel}${x.target_channel}`
-        : `${x.target_channel}${x.origin_channel}`;
-
-    const target_array = mentions_group_map.get(key);
-    if (target_array === undefined) {
-      mentions_group_map.set(key, [x]);
-    } else {
-      target_array.push(x);
-    }
-  });
-  const pairs = Array.from(mentions_group_map.values())
-    .filter((x) => x.length !== 0 && x.length <= 2)
-    .map((x) => {
-      const amount =
-        x.length === 1 ? x[0].comment_num : x[0].comment_num * x[1].comment_num;
-      return { mentions: x, amount };
-    })
+  const pair_components = pairs
     .sort((x, y) => y.amount - x.amount)
     .filter((_, i) => i < 100)
     .map((x, i) => (
@@ -123,7 +90,7 @@ const PairRanking: FC<{}> = () => {
             <th>amount</th>
           </tr>
         </thead>
-        <tbody>{pairs}</tbody>
+        <tbody>{pair_components}</tbody>
       </table>
     </StyledRankingRoot>
   );
