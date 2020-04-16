@@ -2,6 +2,7 @@
   "name": "nijisanji-mesh",
   "version": "0.1.0",
   "private": true,
+  "homepage": ".",
   "dependencies": {
     "@emotion/core": "^10.0.28",
     "@emotion/styled": "^10.0.27",
@@ -18,6 +19,7 @@
     "@types/urlencode": "^1.1.1",
     "awesome-sigmoid": "^1.0.1",
     "d3": "^5.15.1",
+    "gh-pages": "^2.2.0",
     "jsdom": "^16.2.2",
     "mix-color": "^1.1.2",
     "node-fetch": "^2.6.0",
@@ -35,8 +37,7 @@
     "scraping": "cd src/scraping && ts-node index.ts",
     "start": "react-scripts start",
     "build": "react-scripts build",
-    "test": "react-scripts test",
-    "eject": "react-scripts eject"
+    "deploy": "npm run build && gh-pages -d build -r git@github.com:OoyamaYoshito/nijisanji_mesh.git"
   },
   "eslintConfig": {
     "extends": "react-app"

@@ -2,9 +2,7 @@
 
 にじさんじメンバーの関係性を可視化します
 
-## サイト
-
-URL
+https://ooyamayoshito.github.io/nijisanji_mesh/
 
 ## 概要
 
