@@ -16,7 +16,7 @@
     "@types/sanitize-filename": "^1.6.3",
     "@types/stats-lite": "^2.2.0",
     "@types/urlencode": "^1.1.1",
-    "awesome-sigmoid": "0.0.7",
+    "awesome-sigmoid": "^1.0.1",
     "d3": "^5.15.1",
     "jsdom": "^16.2.2",
     "mix-color": "^1.1.2",

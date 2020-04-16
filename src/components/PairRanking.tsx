@@ -98,10 +98,8 @@ const PairRanking: FC<{}> = () => {
 
 const StyledRankingRoot = styled.div`
   margin: 0 auto;
+  padding-top: ${theme.px.grid()};
   max-width: ${theme.px.max_width()};
-  h2 {
-  }
-
   table {
     margin: ${theme.px.grid()} auto 0;
     border-collapse: collapse;

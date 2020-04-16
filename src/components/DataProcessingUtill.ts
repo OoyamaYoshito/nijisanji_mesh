@@ -55,6 +55,7 @@ const getNodes = (): NodeData[] => {
     id: i,
     name: x.name,
     channel_id: x.channel_id,
+    icon: x.icon,
   }));
   return nodes;
 };

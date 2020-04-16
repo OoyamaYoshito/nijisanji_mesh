@@ -3,8 +3,12 @@ import { LinkData } from './types';
 import * as d3 from 'd3';
 import styled from '@emotion/styled';
 import theme from '../../style/theme';
+import mixColor from 'mix-color';
 
-export const Link: FC<{ data: LinkData }> = ({ data }) => {
+export const Link: FC<{ data: LinkData; weight: number }> = ({
+  data,
+  weight,
+}) => {
   const line = useRef(null);
   useEffect(() => {
     if (line.current === null) return;
@@ -14,11 +18,19 @@ export const Link: FC<{ data: LinkData }> = ({ data }) => {
       root.datum();
     };
   });
-  return <StyledLineRoot className="link" ref={line}></StyledLineRoot>;
+  return (
+    <StyledLineRoot
+      className="link"
+      ref={line}
+      weight={weight}
+    ></StyledLineRoot>
+  );
 };
 
-const StyledLineRoot = styled.line`
-  stroke: ${theme.colors.accent};
+const StyledLineRoot = styled.line<{ weight: number }>`
+  stroke: ${({ weight }) =>
+    mixColor(theme.colors.main, theme.colors.accent, weight)};
+  stroke-width: ${({ weight }) => weight * 7 + 2};
   opacity: 1;
 `;
 

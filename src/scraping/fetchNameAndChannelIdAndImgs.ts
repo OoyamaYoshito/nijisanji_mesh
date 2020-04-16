@@ -4,23 +4,28 @@ import sanitize from 'sanitize-filename';
 import { Member } from '../types';
 import { JSDOM } from 'jsdom';
 import { TOPPAGE_URL, FUNC_CACHE_DIR } from './settings';
-import cachedFetchContent from './cachedFetch';
+import cachedFetchText, { cachedFetchBase64 } from './cachedFetch';
 
-export type NameAndChannelId = Pick<Member, 'name' | 'channel_id'>;
-export const fetchNameAndChannelId = async (
+export type NameAndChannelIdAndImg = Pick<
+  Member,
+  'name' | 'channel_id' | 'icon'
+>;
+export const fetchNameAndChannelIdAndImg = async (
   memberpage_url: string
-): Promise<NameAndChannelId | null> => {
+): Promise<NameAndChannelIdAndImg | null> => {
   const fullpath = path.join(
     __dirname,
     FUNC_CACHE_DIR,
     sanitize(memberpage_url)
   );
   try {
-    return JSON.parse(fs.readFileSync(fullpath).toString()) as NameAndChannelId;
+    return JSON.parse(
+      fs.readFileSync(fullpath).toString()
+    ) as NameAndChannelIdAndImg;
   } catch (e) {}
 
   //no cache
-  const toppage_dom = new JSDOM(await cachedFetchContent(TOPPAGE_URL));
+  const toppage_dom = new JSDOM(await cachedFetchText(TOPPAGE_URL));
   const toppage_document = toppage_dom.window.document;
 
   const name_img = toppage_document.querySelector(
@@ -28,8 +33,10 @@ export const fetchNameAndChannelId = async (
   );
   if (name_img === null) return null;
   const name = (name_img as HTMLImageElement).alt;
+  const img_url = (name_img as HTMLImageElement).src;
+  const icon = await cachedFetchBase64(img_url);
 
-  const memberpage_dom = new JSDOM(await cachedFetchContent(memberpage_url));
+  const memberpage_dom = new JSDOM(await cachedFetchText(memberpage_url));
   const memberpage_document = memberpage_dom.window.document;
 
   const channel_link = memberpage_document.querySelector(
@@ -42,12 +49,14 @@ export const fetchNameAndChannelId = async (
   if (matched === null) return null;
   const channel_id = matched[1].replace('?sub_confirmation=1', '');
 
-  fs.writeFileSync(fullpath, JSON.stringify({ name, channel_id }));
-  return { name, channel_id };
+  fs.writeFileSync(fullpath, JSON.stringify({ name, channel_id, icon }));
+  return { name, channel_id, icon };
 };
 
-export const fetchNameAndChannelIds = async (): Promise<NameAndChannelId[]> => {
-  const dom = new JSDOM(await cachedFetchContent(TOPPAGE_URL));
+export const fetchNameAndChannelIdAndImgs = async (): Promise<
+  NameAndChannelIdAndImg[]
+> => {
+  const dom = new JSDOM(await cachedFetchText(TOPPAGE_URL));
   const document = dom.window.document;
 
   const memberpage_anchers: NodeListOf<Element> = document.querySelectorAll(
@@ -58,14 +67,14 @@ export const fetchNameAndChannelIds = async (): Promise<NameAndChannelId[]> => {
     (x) => (x as HTMLAnchorElement).href
   );
 
-  let name_and_channel_ids: NameAndChannelId[] = [];
+  let name_and_channel_id_and_imgs: NameAndChannelIdAndImg[] = [];
   for (const url of memberpage_urls) {
-    const name_and_channel_id = await fetchNameAndChannelId(url);
-    if (null !== name_and_channel_id)
-      name_and_channel_ids.push(name_and_channel_id);
+    const name_and_channel_id_and_img = await fetchNameAndChannelIdAndImg(url);
+    if (null !== name_and_channel_id_and_img)
+      name_and_channel_id_and_imgs.push(name_and_channel_id_and_img);
   }
 
-  return name_and_channel_ids;
+  return name_and_channel_id_and_imgs;
 };
 
-export default fetchNameAndChannelIds;
+export default fetchNameAndChannelIdAndImgs;

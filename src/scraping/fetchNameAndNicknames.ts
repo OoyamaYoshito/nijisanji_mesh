@@ -2,7 +2,7 @@ import path from 'path';
 import fs from 'fs';
 import { Member } from '../types';
 import { JSDOM } from 'jsdom';
-import cachedFetchContent from './cachedFetch';
+import cachedFetchText from './cachedFetch';
 import { NICKNAME_WIKI_URL, FUNC_CACHE_DIR } from './settings';
 
 export type NameAndNicknames = Pick<Member, 'name' | 'nicknames'>;
@@ -52,7 +52,7 @@ export const fetchNameAndNicknames = async (): Promise<NameAndNicknames[]> => {
   } catch (e) {}
 
   //no cache
-  const dom = new JSDOM(await cachedFetchContent(NICKNAME_WIKI_URL));
+  const dom = new JSDOM(await cachedFetchText(NICKNAME_WIKI_URL));
   const document = dom.window.document;
 
   const tables = document.querySelectorAll('div.h-scrollable');

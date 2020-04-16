@@ -1,5 +1,5 @@
 import { Member, Mention } from '../types';
-import cachedFetchContent from './cachedFetch';
+import cachedFetchText from './cachedFetch';
 import urlencode from 'urlencode';
 import { CHARSET } from './settings';
 
@@ -12,7 +12,7 @@ const fetchNicknamesMentions = async (
   nickname: string,
   target_channel: string
 ): Promise<Mention[]> => {
-  const content = await cachedFetchContent(
+  const content = await cachedFetchText(
     `https://comment.vtubersoft.com/api/count_hits?q=${urlencode(
       nickname,
       CHARSET

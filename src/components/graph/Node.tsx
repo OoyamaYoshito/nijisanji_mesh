@@ -44,17 +44,29 @@ export const Node: FC<{
 
   return (
     <StyledNodeRoot className="node" ref={root_element}>
-      <circle r={15} />
-      <text y={7}>{data.name}</text>
+      <text x={theme.px.grid()} y={theme.px.font_size(0.5)}>
+        {data.name}
+      </text>
+      <image
+        x={theme.px.grid(-1)}
+        y={theme.px.grid(-1)}
+        xlinkHref={`data:image/png;base64,${data.icon}`}
+      />
     </StyledNodeRoot>
   );
 };
 
 const StyledNodeRoot = styled.g`
-  circle {
-    stroke: #2a4b71;
-    stroke-width: 2px;
-    fill: ${theme.colors.base};
+  cursor: pointer;
+
+  text {
+    fill: #999;
+    text-shadow: 0 0 1px #fff, 0 0 3px #fff, 0px 0px 5px #fff;
+  }
+
+  image {
+    width: ${theme.px.grid(2)};
+    border-radius: 50%;
   }
 `;
 

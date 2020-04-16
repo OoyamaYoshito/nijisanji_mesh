@@ -1,68 +1,44 @@
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+# NIJISANJI-MESH
 
-## Available Scripts
+にじさんじメンバーの関係性を可視化します
 
-In the project directory, you can run:
+## サイト
 
-### `npm start`
+URL
 
-Runs the app in the development mode.<br />
-Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
+## 概要
 
-The page will reload if you make edits.<br />
-You will also see any lint errors in the console.
+各メンバーの生放送チャット欄で、他のメンバーの名前が出た回数をカウントしています。例えば、月ノ美兎の配信チャット欄で「樋口楓」「でろーん」「かえ姉」などのコメント回数から、2 人の関係の強さを計算しています。
 
-### `npm test`
+## 起動方法
 
-Launches the test runner in the interactive watch mode.<br />
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+1. `git clone git@github.com:OoyamaYoshito/nijisanji_mesh.git`
+1. `cd nijisanji_mesh`
+1. `npm i`
+1. `npm run scraping`
+1. `npm run start`
+1. `localhost:3000` にアクセス
 
-### `npm run build`
+## ポリシー
 
-Builds the app for production to the `build` folder.<br />
-It correctly bundles React in production mode and optimizes the build for the best performance.
+本プロジェクトは、ファンプロジェクトであり、にじさんじ公式とは関係ありません。
 
-The build is minified and the filenames include the hashes.<br />
-Your app is ready to be deployed!
+本プロジェクトは、[にじさんじ二次創作ガイドライン](https://event.nijisanji.app/guidelines/)に準拠します。本プロジェクトに、公式コンテンツイメージを損なわせるような意図はありません。
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+本プロジェクトで扱う情報は、以下の Web サイトから取得しました。各資源へのアクセスを 7000ms 以上の間隔を空けて行うことで、外部サイトへの負荷を軽減しています。
 
-### `npm run eject`
+- にじさんじメンバーの一覧とアイコン: [にじさんじ公式サイト](https://nijisanji.ichikara.co.jp/member/)
+- メンバーの呼び方: [メンバー間の呼び方一覧 - にじさんじ Wiki](https://wikiwiki.jp/nijisanji/%E3%83%A1%E3%83%B3%E3%83%90%E3%83%BC%E9%96%93%E3%81%AE%E5%91%BC%E3%81%B3%E6%96%B9%E4%B8%80%E8%A6%A7)
+- コメント情報: [VTuber コメント検索](https://comment.vtubersoft.com/)
 
-**Note: this is a one-way operation. Once you `eject`, you can’t go back!**
+本プロジェクトに問題がある場合は、リポジトリの[issue](https://github.com/OoyamaYoshito/nijisanji_mesh/issues)へご一報ください。
 
-If you aren’t satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+## 謝辞
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you’re on your own.
+[sititou70/yurigraph](https://github.com/sititou70/yurigraph)
 
-You don’t have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn’t feel obligated to use this feature. However we understand that this tool wouldn’t be useful if you couldn’t customize it when you are ready for it.
+ページレイアウトやグラフの作成方法などについて、参考にさせていただきました。
 
-## Learn More
+## ライセンス
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
-
-To learn React, check out the [React documentation](https://reactjs.org/).
-
-### Code Splitting
-
-This section has moved here: https://facebook.github.io/create-react-app/docs/code-splitting
-
-### Analyzing the Bundle Size
-
-This section has moved here: https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size
-
-### Making a Progressive Web App
-
-This section has moved here: https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app
-
-### Advanced Configuration
-
-This section has moved here: https://facebook.github.io/create-react-app/docs/advanced-configuration
-
-### Deployment
-
-This section has moved here: https://facebook.github.io/create-react-app/docs/deployment
-
-### `npm run build` fails to minify
-
-This section has moved here: https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify
+MIT
